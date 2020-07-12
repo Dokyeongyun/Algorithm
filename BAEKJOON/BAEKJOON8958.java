@@ -46,6 +46,7 @@ public class BAEKJOON8958 {
             }
         }
 
+        
         for (int i = 0; i < count.length; i++) {
             System.out.print(count[i] + " ");
         }
