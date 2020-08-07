@@ -20,24 +20,58 @@ N이 3보다 클 경우, 크기 N의 패턴은 공백으로 채워진 가운데�
 import java.util.Scanner;
 
 public class BAEKJOON2447 {
+
+    static String[][] patterns;
+
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
         int N = scan.nextInt();
 
-        String[][] patterns = new String[N][N];
-
-        for(int i=0; i<N; i++){
-            for(int j=0; j<N; j++){
-                patterns[i][j] = "*";
+        patterns = new String[N][N];
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                patterns[i][j] = " ";
             }
         }
 
 
-        for(int i=0; i<N; i++){
-            for(int j=0; j<N; j++){
+        fill(0, 0, N);
+
+        // 출력
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                sb.append(patterns[i][j]);
+            }
+            sb.append("\n"); 
+        }
+        System.out.println(sb);
+
+        // 출력 메모리 초과
+        /*        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
                 System.out.print(patterns[i][j]);
             }
             System.out.println();
+        }*/
+    }
+
+    public static void fill(int row, int col, int n) {
+        if (n == 1) {
+            patterns[row][col] = "*";
+            return;
+        }
+
+        int x = n / 3;
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (i == 1 && j == 1) {
+                    continue;
+                } else {
+                    fill(row + (x * i), col + (x * j), x);
+                }
+            }
         }
     }
 }
