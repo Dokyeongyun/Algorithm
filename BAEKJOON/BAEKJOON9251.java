@@ -21,7 +21,7 @@ LCS(Longest Common Subsequence, 최장 공통 부분 수열)문제는 두 수열
 public class BAEKJOON9251 {
     static char[] string1;
     static char[] string2;
-    static int[][] dp;
+    static Integer[][] dp;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -29,13 +29,13 @@ public class BAEKJOON9251 {
         string1 = br.readLine().toCharArray();
         string2 = br.readLine().toCharArray();
 
-        dp = new int[string1.length][string2.length];
+        dp = new Integer[string1.length][string2.length];
         System.out.println(LCS(string1.length - 1, string2.length - 1));
     }
 
     static int LCS(int x, int y) {
         if(x == -1 || y == -1) return 0;
-        if(dp[x][y] == 0) {
+        if(dp[x][y] == null) {
             dp[x][y] = 0;
             if(string1[x] == string2[y])
                 dp[x][y] = LCS(x - 1, y - 1) + 1;
