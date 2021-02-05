@@ -8,6 +8,8 @@ import java.util.*;
 public class BAEKJOON1325 {
     static int N;
     static ArrayList<Integer>[] list;
+    static boolean[] visit;
+    static int[] cnt;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -17,6 +19,8 @@ public class BAEKJOON1325 {
         int M = Integer.parseInt(st.nextToken());
 
         list = new ArrayList[N+1];
+        cnt = new int[N+1];
+
         for(int i=0; i<list.length; i++){
             list[i] = new ArrayList<>();
         }
@@ -27,14 +31,31 @@ public class BAEKJOON1325 {
             int next = Integer.parseInt(st.nextToken());
 
             list[next].add(cur);
+//            list[cur].add(next);
         }
+
+/*        for(int i=1; i<=N; i++) {
+            dfs(i);
+        }
+
+        int max = 0;
+
+        for(int i=1; i<=N; i++) {
+            max = Math.max(max, cnt[i]);
+        }
+        StringBuffer sb = new StringBuffer();
+        for(int i=1; i<=N; i++) {
+            if(cnt[i] == max)
+                sb.append(i+" ");
+        }
+        System.out.println(sb.toString());*/
 
         int[] ans = new int[N+1];
         int max = 0;
         for(int i=1; i<list.length; i++){
-            int temp = BFS(i);
-            ans[i] = temp;
-            max = Math.max(temp, max);
+            visit = new boolean[N+1];
+            ans[i] = BFS(i);
+            max = Math.max(ans[i], max);
         }
         StringBuilder sb = new StringBuilder();
         for(int i=1; i<ans.length; i++){
@@ -46,8 +67,6 @@ public class BAEKJOON1325 {
     }
 
     static int BFS(int start){
-        boolean[] visit = new boolean[N+1];
-
         int count = 0;
 
         Queue<Integer> que = new LinkedList<>();
@@ -68,5 +87,17 @@ public class BAEKJOON1325 {
             }
         }
         return count;
+    }
+    public static void dfs(int start) {
+        visit = new boolean[N+1];
+
+        visit[start] = true;
+
+        for(int i=0; i<list[start].size(); i++) {
+            if(!visit[list[start].get(i)]) {
+                cnt[list[start].get(i)]++;
+                dfs(list[start].get(i));
+            }
+        }
     }
 }
