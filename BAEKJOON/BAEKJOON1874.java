@@ -1,7 +1,8 @@
 package BAEKJOON;
 
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Stack;
 
 /*
@@ -23,7 +24,62 @@ import java.util.Stack;
 push연산은 +로, pop 연산은 -로 표현하도록 한다. 불가능한 경우 NO를 출력한다.
  */
 public class BAEKJOON1874 {
-    static ArrayList<String> answer = new ArrayList<>();
+    static Stack<Integer> stack = new Stack<>();
+    static StringBuilder sb = new StringBuilder();
+    static int index = 1;
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        int N = Integer.parseInt(br.readLine());
+        int[] arr = new int[N];
+        for(int i=0; i<N; i++) arr[i] = Integer.parseInt(br.readLine());
+
+        int first = arr[0];
+        for(int i=index; i<=first; i++){
+            push(i);
+        }
+        pop();
+        for(int i=1; i<N; i++){
+            int temp = arr[i];
+//            System.out.println("next: "+temp);
+            if(stack.size()==0){
+                for(int j=index; j<=temp; j++){
+                    push(j);
+                }
+                pop();
+                continue;
+            }
+            int top = stack.peek();
+//            System.out.println("top: "+top);
+            if(temp > top){
+                for(int j=index; j<=temp; j++){
+                    push(j);
+                }
+                pop();
+            }else if(temp == top){
+                pop();
+            }else{
+                System.out.println("NO");
+                return;
+            }
+
+//            System.out.println(i+" "+stack.toString());
+        }
+        System.out.println(sb);
+    }
+
+    static void push(int num){
+        stack.push(num);
+        sb.append("+\n");
+        index++;
+    }
+    static void pop(){
+        stack.pop();
+        sb.append("-\n");
+    }
+
+/*    static ArrayList<String> answer = new ArrayList<>();
     static Stack<Integer> stack = new Stack<>();
 
     public static void main(String[] args) {
@@ -75,5 +131,5 @@ public class BAEKJOON1874 {
     public static void pop() {
         stack.pop();
         answer.add("-");
-    }
+    }*/
 }
