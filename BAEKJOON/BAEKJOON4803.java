@@ -1,100 +1,94 @@
 package BAEKJOON;
 
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
 
+/*
+https://www.acmicpc.net/problem/4803
+ */
 public class BAEKJOON4803 {
-    static boolean[] visited = new boolean[501];
-    static Area[][] graph = new Area[501][501];
+    static ArrayList<Integer>[] adjacency;
+    static boolean[] visit;
+    static int[] parent;
+    static int N, M;
 
-    static int nodes = 0;
-    static int edges = 0;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-    static int n;
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        StringBuilder result = new StringBuilder();
+        int caseNum = 0;
 
-        n = sc.nextInt();
-        int m = sc.nextInt();
+        while (true) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            N = Integer.parseInt(st.nextToken());
+            M = Integer.parseInt(st.nextToken());
 
-        for (int i = 1; i <= 500; i++) {
-            for (int j = 1; j <= 500; j++) graph[i][j] = new Area();
-            visited[i] = false;
+            if (N == 0 && M == 0) break; // 종료 조건
+
+            caseNum++;
+
+            adjacency = new ArrayList[N + 1];
+            visit = new boolean[N + 1];
+            parent = new int[N + 1];
+
+            for (int i = 0; i < N + 1; i++) {
+                adjacency[i] = new ArrayList();
+            }
+
+            // 인접성 추가
+            for (int i = 0; i < M; i++) {
+                st = new StringTokenizer(br.readLine());
+                int start = Integer.parseInt(st.nextToken());
+                int end = Integer.parseInt(st.nextToken());
+
+                adjacency[start].add(end);
+                adjacency[end].add(start);
+            }
+
+            int count = BFS();
+
+            if (count == 0) {
+                System.out.println("Case " + caseNum + ": No trees.");
+            } else if (count == 1) {
+                System.out.println("Case " + caseNum + ": There is one tree.");
+            } else {
+                System.out.println("Case " + caseNum + ": A forest of " + count + " trees.");
+            }
         }
+    }
 
+    static int BFS() {
         int count = 0;
-        int caseCount = 1;
-        while ((n != 0) || (m != 0)) {
-            for (int i = 0; i < m; i++) {
-                int parentNode = sc.nextInt();
-                int childNode = sc.nextInt();
+        boolean isTree = true;
+        Queue<Integer> que = new LinkedList<>();
 
-                graph[parentNode][childNode].isPath = true;
-                graph[childNode][parentNode].isPath = true;
-            }
+        for (int i = 1; i < N + 1; i++) {
+            if (!visit[i]) {
+                isTree = true;
+                visit[i] = true;
+                que.add(i);
 
-            for (int i = 1; i <= n; i++) {
-                nodes = 0;
-                edges = 0;
-                if (!visited[i]) {
-                    searchTree(i);
-                    if (nodes == edges + 1) count++; // 트리의 조건을 이용해 트리여부 판단
+                while (!que.isEmpty()) {
+                    int cur = que.poll();
+
+                    for (int j = 0; j < adjacency[cur].size(); j++) {
+                        int next = adjacency[cur].get(j);
+
+                        if (visit[next] && parent[cur] != next) {
+                            isTree = false;
+                        } else if (visit[next]) {
+                            continue;
+                        } else {
+                            que.add(next);
+                            visit[next] = true;
+                            parent[next] = cur;
+                        }
+                    }
                 }
-            }
-
-            result.append("Case " + caseCount + ": ");
-            if (count == 0) result.append("No trees.\n");
-            else if (count == 1) result.append("There is one tree.\n");
-            else result.append("A forest of " + count + " trees.\n");
-
-            resetGlobalVars();
-            count = 0;
-            caseCount++;
-
-            n = sc.nextInt();
-            m = sc.nextInt();
-        }
-
-        System.out.print(result.toString());
-    }
-
-    static void resetGlobalVars() {
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= n; j++) graph[i][j].initVars();
-            visited[i] = false;
-        }
-    }
-
-    static void searchTree(int node) {
-        if (!visited[node]) {
-            visited[node] = true;
-            nodes++;
-        }
-
-        for (int i = 1; i <= n; i++) {
-            if (graph[node][i].isPath && !graph[node][i].isWent) {
-                edges++;
-                graph[node][i].isWent = true;
-                graph[i][node].isWent = true;
-
-                searchTree(i);
+                if (isTree) count++;
             }
         }
-    }
-
-
-    static class Area {
-        public boolean isPath;
-        public boolean isWent;
-
-        public Area() {
-            isPath = false;
-            isWent = false;
-        }
-
-        public void initVars() {
-            isPath = false;
-            isWent = false;
-        }
+        return count;
     }
 }
