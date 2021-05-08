@@ -3,54 +3,73 @@ package BAEKJOON;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Stack;
+import java.util.LinkedList;
+import java.util.Queue;
 
+/**
+ * https://www.acmicpc.net/problem/12852
+ */
 public class BAEKJOON12852 {
+    static Node answer;
     static int N;
-    private static int dp[][] = new int[(int)(1e+6)+1][2];
+    static boolean[] visit = new boolean[1000001];
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringBuffer sb = new StringBuffer();
 
         N = Integer.parseInt(br.readLine());
-        for(int i = 0; i<dp.length; i++){
-            dp[i][0] = Integer.MAX_VALUE; } dp[N][0] = 0; calc(N);
-        sb.append(dp[1][0] + "\n");
-        Stack<Integer> list = new Stack<>();
-        int i = 1; if(N == 2){
-            sb.append("2 ");
-        }else{
-            while(list.size() != dp[1][0]) {
-                list.push(i = dp[i][1]);
-            }
-            while(!list.isEmpty()){
-                sb.append(list.pop() + " ");
-            }
+
+        BFS();
+        System.out.println(answer.count);
+        String[] split = answer.path.split(" ");
+        StringBuilder sb = new StringBuilder();
+        for (int i = split.length - 1; i >= 0; i--) {
+            sb.append(split[i]).append(" ");
         }
-        sb.append("1");
         System.out.println(sb);
     }
-    private static void calc(int N) throws IOException {
-        if(N == 1){
-            return;
-        }
-        if(N % 3 == 0){
-            if(dp[N / 3][0] >= dp[N][0] + 1){
-                dp[N / 3][0] = dp[N][0] + 1; dp[N / 3][1] = N;
-                calc(N / 3);
+
+    static void BFS() {
+        Queue<Node> que = new LinkedList<>();
+        que.add(new Node(1, 0, "1"));
+
+        while (!que.isEmpty()) {
+            Node cur = que.poll();
+            if (cur.value == N) {
+                answer = cur;
+                break;
             }
-        }
-        if(N % 2 == 0){
-            if(dp[N / 2][0] >= dp[N][0] + 1){
-                dp[N / 2][0] = dp[N][0] + 1; dp[N / 2][1] = N;
-                calc(N / 2);
+
+            if ((cur.value + 1 <= 1000000) && !visit[cur.value + 1]) {
+                que.add(new Node(cur.value + 1, cur.count + 1, cur.path + " " + (cur.value + 1)));
+                visit[cur.value + 1] = true;
             }
-        }
-        if(dp[N - 1][0] >= dp[N][0] + 1){
-            dp[N - 1][0] = dp[N][0] + 1; dp[N - 1][1] = N;
-            calc(N - 1);
+            if ((cur.value * 2 <= 1000000) && !visit[cur.value * 2]) {
+                que.add(new Node(cur.value * 2, cur.count + 1, cur.path + " " + (cur.value * 2)));
+                visit[cur.value * 2] = true;
+            }
+            if ((cur.value * 3 <= 1000000) && !visit[cur.value * 3]) {
+                que.add(new Node(cur.value * 3, cur.count + 1, cur.path + " " + (cur.value * 3)));
+                visit[cur.value * 3] = true;
+            }
+//            System.out.println(que);
         }
     }
 
+    static class Node {
+        int value;
+        int count;
+        String path;
+
+        Node(int value, int count, String path) {
+            this.value = value;
+            this.count = count;
+            this.path = path;
+        }
+
+        @Override
+        public String toString() {
+            return value + " " + path;
+        }
+    }
 }
