@@ -5,40 +5,40 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
+/**
+ * https://www.acmicpc.net/problem/14501
+ */
 public class BAEKJOON14501 {
-    static int N, max = 0;
-    static int[][] arr;
+
+    static int N;
+    static int max = 0;
+    static int[] tArr;
+    static int[] pArr;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         N = Integer.parseInt(br.readLine());
-        arr = new int[N][2];
+
+        tArr = new int[N];
+        pArr = new int[N];
+
+        StringTokenizer st;
+        for (int i = 0; i < N; i++) {
+            st = new StringTokenizer(br.readLine());
+
+            tArr[i] = Integer.parseInt(st.nextToken());
+            pArr[i] = Integer.parseInt(st.nextToken());
+        }
+
+        int[] dp = new int[N + 1];
 
         for (int i = 0; i < N; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            arr[i][0] = Integer.parseInt(st.nextToken());
-            arr[i][1] = Integer.parseInt(st.nextToken());
+            if (i + tArr[i] <= N) {
+                dp[i + tArr[i]] = Math.max(dp[i + tArr[i]], dp[i] + pArr[i]);
+            }
+            dp[i + 1] = Math.max(dp[i + 1], dp[i]);
         }
-
-        DFS(0, 0);
-
-        System.out.println(max);
-    }
-
-    static void DFS(int d, int profit) {
-        if (d >= N) {
-            max = Math.max(max, profit);
-            return;
-        }
-
-        if (d + arr[d][0] <= N) {
-            DFS(d + arr[d][0], profit + arr[d][1]);
-        } else {
-            DFS(d + arr[d][0], profit);
-        }
-
-        DFS(d + 1, profit);
+        System.out.println(dp[N]);
     }
 }
-
