@@ -3,32 +3,37 @@ package baekjoon;
 import java.io.*;
 import java.util.Stack;
 
+/**
+ * https://www.acmicpc.net/problem/10799
+ */
 public class _10799 {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String brackets = br.readLine();
 
-        String s = br.readLine();
+        boolean isPreviousBracketOpen = false;
+        int numberOfPiece = 0;
 
         Stack<Character> stack = new Stack<>();
-
-        int result = 0;
-        for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) == '(') {
-                stack.push('(');
-                continue;
-            }
-
-            if (s.charAt(i) == ')') {
-                stack.pop();
-
-                if (s.charAt(i - 1) == '(') {
-                    result += stack.size();
-                } else {
-                    result++;
-                }
+        for (Character c : brackets.toCharArray()) {
+            switch (c) {
+                case '(':
+                    stack.push(c);
+                    isPreviousBracketOpen = true;
+                    break;
+                case ')':
+                    stack.pop();
+                    if (isPreviousBracketOpen) {
+                        numberOfPiece += stack.size();
+                    } else {
+                        numberOfPiece++;
+                    }
+                    isPreviousBracketOpen = false;
+                    break;
             }
         }
 
-        System.out.println(result);
+        System.out.println(numberOfPiece);
     }
+
 }
