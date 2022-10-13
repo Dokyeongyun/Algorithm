@@ -3,143 +3,104 @@ package baekjoon;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
+/**
+ * https://www.acmicpc.net/problem/1043
+ */
 public class _1043 {
-    static int n, m, k;
-    static int count = 0;
-    static ArrayList<Integer> party[];
-    static ArrayList<Integer> people[];
-    static ArrayList<Integer> know;
-    static boolean visit[];
-    public static void main(String[] args) throws IOException {
 
+    static int[] parent;
+
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        n = Integer.parseInt(st.nextToken());
-        m = Integer.parseInt(st.nextToken());
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+
+        boolean[] isKnowTheTruth = new boolean[N + 1];
+        parent = new int[N + 1];
+        for (int i = 1; i < parent.length; i++) {
+            parent[i] = i;
+        }
 
         st = new StringTokenizer(br.readLine());
-        k = Integer.parseInt(st.nextToken());
+        int numberOfKnows = Integer.parseInt(st.nextToken());
+        for (int i = 0; i < numberOfKnows; i++) {
+            isKnowTheTruth[Integer.parseInt(st.nextToken())] = true;
+        }
 
-        party = new ArrayList[m+1];
-        for(int i=0; i<m+1; i++)
-            party[i] = new ArrayList<>();
+        List<Integer>[] partyPeople = new ArrayList[M + 1];
+        for (int i = 1; i < partyPeople.length; i++) {
+            partyPeople[i] = new ArrayList<>();
+        }
 
-        people = new ArrayList[n+1];
-        for(int i=0; i<n+1; i++)
-            people[i] = new ArrayList<>();
+        for (int i = 1; i <= M; i++) {
+            String[] split = br.readLine().split(" ");
 
-        know = new ArrayList<>();
-        visit = new boolean[m+1];
+            int numberOfPartyPeople = Integer.parseInt(split[0]);
 
-        for(int i=0; i<k; i++)
-            know.add(Integer.parseInt(st.nextToken()));
+            if (numberOfPartyPeople == 1) {
+                partyPeople[i].add(Integer.parseInt(split[1]));
+                continue;
+            }
 
-        for(int i=0; i<m; i++) {
-            st = new StringTokenizer(br.readLine());
-            int num = Integer.parseInt(st.nextToken());
-            for(int j=0; j<num; j++) {
-                int val = Integer.parseInt(st.nextToken());
-                party[i].add(val);
-                people[val].add(i);
+            for (int j = 1; j < numberOfPartyPeople; j++) {
+                int p1 = Integer.parseInt(split[j]);
+                int p2 = Integer.parseInt(split[j + 1]);
+
+                if (find(p1) != find(p2)) {
+                    union(p1, p2);
+                }
+
+                partyPeople[i].add(p1);
+                partyPeople[i].add(p2);
             }
         }
 
+        boolean[] visited = new boolean[N + 1];
+        for (int i = 1; i <= N; i++) {
+            if (isKnowTheTruth[i] && !visited[i]) {
+                int parent = find(i);
+                for (int j = 1; j <= N; j++) {
+                    if (find(j) == parent) {
+                        isKnowTheTruth[j] = true;
+                        visited[j] = true;
+                    }
+                }
+            }
+        }
 
-        bfs();
+        int count = 0;
+        for (int i = 1; i < partyPeople.length; i++) {
+            boolean flag = false;
+            for (int person : partyPeople[i]) {
+                if (isKnowTheTruth[person]) {
+                    flag = true;
+                    break;
+                }
+            }
+            if (!flag) {
+                count++;
+            }
+        }
 
         System.out.println(count);
 
     }
-    public static void bfs() {
-        Queue<Integer> queue = new LinkedList<>();
 
-        for(int i=0; i<know.size(); i++) {
-            for(int j=0; j<people[know.get(i)].size(); j++) {
-                if(!visit[people[know.get(i)].get(j)]) {
-                    visit[people[know.get(i)].get(j)] = true;
-                    queue.add(people[know.get(i)].get(j));
-                }
-            }
+    private static int find(int index) {
+        if (parent[index] == index) {
+            return index;
         }
 
-        while(!queue.isEmpty()) {
-            int val = queue.poll();
-            for(int i=0; i<party[val].size(); i++) {
-                for(int j=0; j<people[party[val].get(i)].size(); j++) {
-                    if(!visit[people[party[val].get(i)].get(j)]) {
-                        visit[people[party[val].get(i)].get(j)] = true;
-                        queue.add(people[party[val].get(i)].get(j));
-                    }
-                }
-            }
-        }
-
-        for(int i=0; i<m; i++)
-            if(!visit[i])
-                count++;
+        return parent[index] = find(parent[index]);
     }
+
+    private static void union(int a, int b) {
+        int parentOfB = find(b);
+        parent[parentOfB] = a;
+    }
+
 }
-/*    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-
-        int n = Integer.parseInt(st.nextToken());
-        int m = Integer.parseInt(st.nextToken());
-
-        boolean[] know = new boolean[n+1];
-        boolean[] cantParty = new boolean[m];
-
-        st = new StringTokenizer(br.readLine());
-        int knowCount = Integer.parseInt(st.nextToken());
-        for(int i=0; i<knowCount; i++){
-            know[Integer.parseInt(st.nextToken())] = true;
-        }
-
-        ArrayList<Integer>[] partyList = new ArrayList[m];
-
-        for(int i=0; i<m; i++){
-            partyList[i] = new ArrayList<>();
-            st = new StringTokenizer(br.readLine());
-            int partyCount = Integer.parseInt(st.nextToken());
-            for(int j=0; j<partyCount; j++){
-                partyList[i].add(Integer.parseInt(st.nextToken()));
-            }
-        }
-        for(int i=0; i<partyList.length; i++){
-            System.out.println(partyList[i]);
-        }
-
-        while(true){
-            boolean exit = false;
-            for(int i=0; i<cantParty.length; i++){
-                if(!cantParty[i]){
-                    break;
-                }
-                exit = true;
-            }
-            if(exit) break;
-
-
-            for(int i=0; i<partyList.length; i++){
-                for(int j=0; j<partyList[i].size(); j++){
-                    if(know[partyList[i].get(j)]){
-                        cantParty[partyList[i].get(j)] = true;
-                    }
-                }
-            }
-        }
-    }
-}*/
-/*
-4 3
-3 2 3 4
-2 1 2
-1 3
-3 2 3 4
- */
