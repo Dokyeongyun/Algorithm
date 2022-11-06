@@ -56,11 +56,9 @@ public class _13460 {
     static int bfs() {
         Queue<MovingMarble> queue = new LinkedList<>();
         queue.add(new MovingMarble(redMarble, blueMarble, 1));
-        boolean[][] redVisit = new boolean[N][M];
-        boolean[][] blueVisit = new boolean[N][M];
+        boolean[][][][] visit = new boolean[N][M][N][M];
 
-        redVisit[redMarble.position.x][redMarble.position.y] = true;
-        blueVisit[blueMarble.position.x][blueMarble.position.y] = true;
+        visit[redMarble.position.x][redMarble.position.y][blueMarble.position.x][blueMarble.position.y] = true;
 
         while (!queue.isEmpty()) {
             MovingMarble curMarble = queue.poll();
@@ -130,13 +128,11 @@ public class _13460 {
                     }
                 }
 
-                if (redVisit[nextRed.position.x][nextRed.position.y] &&
-                        blueVisit[nextBlue.position.x][nextBlue.position.y]) {
+                if (visit[nextRed.position.x][nextRed.position.y][nextBlue.position.x][nextBlue.position.y]) {
                     continue;
                 }
 
-                redVisit[nextRed.position.x][nextRed.position.y] = true;
-                blueVisit[nextBlue.position.x][nextBlue.position.y] = true;
+                visit[nextRed.position.x][nextRed.position.y][nextBlue.position.x][nextBlue.position.y] = true;
                 queue.add(new MovingMarble(nextRed, nextBlue, curMarble.moveCount + 1));
             }
         }
@@ -178,9 +174,9 @@ public class _13460 {
         @Override
         public String toString() {
             return "MovingMarble{" +
-                    "redMarble=" + redMarble +
-                    ", blueMarble=" + blueMarble +
-                    ", moveCount=" + moveCount +
+                    "R=" + redMarble +
+                    ", B=" + blueMarble +
+                    ", count=" + moveCount +
                     '}';
         }
     }
