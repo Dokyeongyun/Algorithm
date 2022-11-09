@@ -10,79 +10,80 @@ import java.util.StringTokenizer;
  */
 public class _14891 {
 
-    static int[][] gear;
-    static int[] d;
+    static final int numberOfCogWheelTeeth = 8;
+    static final int numberOfGears = 4;
+    static final int leftTeethIndex = 6;
+    static final int rightTeethIndex = 2;
+    static final int NORTH_POLE = 1;
+    static final int SOUTH_POLE = -1;
+
+    static int[][] gears;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
-        gear = new int[4][8];
-
-        for (int i = 0; i < 4; i++) {
+        gears = new int[numberOfGears][numberOfCogWheelTeeth];
+        for (int i = 0; i < numberOfGears; i++) {
             String s = br.readLine();
-            for (int j = 0; j < 8; j++) {
-                gear[i][j] = s.charAt(j) - '0';
+            for (int j = 0; j < numberOfCogWheelTeeth; j++) {
+                gears[i][j] = s.charAt(j) - '0';
             }
         }
 
         int k = Integer.parseInt(br.readLine());
-
         while (k-- > 0) {
             st = new StringTokenizer(br.readLine());
-            int gearN = Integer.parseInt(st.nextToken()) - 1;
-            int turn = Integer.parseInt(st.nextToken());
-
-            d = new int[4];
-
-            d[gearN] = turn;
-            checkDir(gearN);
-            gearTurn();
+            int gearId = Integer.parseInt(st.nextToken()) - 1;
+            int direction = Integer.parseInt(st.nextToken());
+            rotate(gearId, direction);
         }
 
         int point = 0;
-        for (int i = 0; i < 4; i++) {
-            point += gear[i][0] == 0 ? 0 : Math.pow(2, i);
+        for (int i = 0; i < numberOfGears; i++) {
+            point += gears[i][0] == 0 ? 0 : Math.pow(2, i);
         }
         System.out.println(point);
     }
 
-    static void checkDir(int gearN) {
-        for (int i = gearN - 1; i >= 0; i--) {
-            if (gear[i][2] != gear[i + 1][6]) {
-                d[i] = -d[i + 1];
-            } else {
-                break;
-            }
-        }
-        for (int i = gearN + 1; i < 4; i++) {
-            if (gear[i][6] != gear[i - 1][2]) {
-                d[i] = -d[i - 1];
-            } else {
-                break;
-            }
-        }
-    }
+    static void rotate(int gearId, int direction) {
+        int[] directions = new int[numberOfGears];
+        directions[gearId] = direction;
 
-    static void gearTurn() {
+        for (int i = gearId - 1; i >= 0; i--) {
+            if (gears[i][rightTeethIndex] != gears[i + 1][leftTeethIndex]) {
+                directions[i] = directions[i + 1] * -1;
+            } else {
+                break;
+            }
+        }
+        for (int i = gearId + 1; i < numberOfGears; i++) {
+            if (gears[i][leftTeethIndex] != gears[i - 1][rightTeethIndex]) {
+                directions[i] = directions[i - 1] * -1;
+            } else {
+                break;
+            }
+        }
+
         int temp;
-
-        for (int i = 0; i < 4; i++) {
-            if (d[i] == 1) {
-                temp = gear[i][7];
-                for (int j = 7; j > 0; j--) {
-                    gear[i][j] = gear[i][j - 1];
+        for (int i = 0; i < numberOfGears; i++) {
+            if (directions[i] == NORTH_POLE) {
+                temp = gears[i][numberOfCogWheelTeeth - 1];
+                for (int j = numberOfCogWheelTeeth - 1; j > 0; j--) {
+                    gears[i][j] = gears[i][j - 1];
                 }
-                gear[i][0] = temp;
+                gears[i][0] = temp;
             }
-            if (d[i] == -1) {
-                temp = gear[i][0];
-                for (int j = 0; j < 7; j++) {
-                    gear[i][j] = gear[i][j + 1];
+
+            if (directions[i] == SOUTH_POLE) {
+                temp = gears[i][0];
+                for (int j = 0; j < numberOfCogWheelTeeth - 1; j++) {
+                    gears[i][j] = gears[i][j + 1];
                 }
-                gear[i][7] = temp;
+                gears[i][numberOfCogWheelTeeth - 1] = temp;
             }
         }
+
     }
 
 }
